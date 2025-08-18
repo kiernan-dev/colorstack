@@ -8,6 +8,7 @@ import ContrastChecker from '@/components/Tools/ContrastChecker';
 import GradientMaker from '@/components/Tools/GradientMaker';
 import TrendingPalettes from '@/components/Community/TrendingPalettes';
 import ColorList from '@/components/Colors/ColorList';
+import GradientList from '@/components/Gradients/GradientList';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -45,6 +46,10 @@ function App() {
         {
           path: 'color-list',
           element: <ColorList />
+        },
+        {
+          path: 'gradients',
+          element: <GradientList />
         },
         {
           path: '*',

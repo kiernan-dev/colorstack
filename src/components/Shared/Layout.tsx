@@ -180,9 +180,9 @@ const Layout = () => {
                   </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <Link to="/gradients" className="text-gray-600 hover:text-gray-900">
                     Browse gradients
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
