@@ -144,7 +144,7 @@ const Layout = () => {
       {/* Footer (only show on non-palette generator pages) */}
       {!isPaletteGenerator && (
         <footer className="py-8 mt-auto bg-gray-100">
-          <div className="container grid grid-cols-1 gap-8 px-4 mx-auto md:grid-cols-4 md:px-6">
+          <div className="container grid grid-cols-1 gap-8 px-4 mx-auto md:grid-cols-2 md:px-6">
             <div>
               <h3 className="mb-4 text-lg font-semibold">Tools</h3>
               <ul className="space-y-2">
@@ -170,60 +170,18 @@ const Layout = () => {
               <h3 className="mb-4 text-lg font-semibold">More</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <Link to="/trending" className="text-gray-600 hover:text-gray-900">
                     Explore trending palettes
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <Link to="/color-list" className="text-gray-600 hover:text-gray-900">
                     List of colors
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a href="#" className="text-gray-600 hover:text-gray-900">
                     Browse gradients
-                  </a>
-                </li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="mb-4 text-lg font-semibold">Apps</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
-                    iOS App
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
-                    Android App
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
-                    Figma Plugin
-                  </a>
-                </li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="mb-4 text-lg font-semibold">Company</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
-                    About
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
-                    Contact
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900">
-                    Privacy policy
                   </a>
                 </li>
               </ul>

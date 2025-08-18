@@ -7,6 +7,7 @@ import PaletteGenerator from '@/components/PaletteGenerator/PaletteGenerator';
 import ContrastChecker from '@/components/Tools/ContrastChecker';
 import GradientMaker from '@/components/Tools/GradientMaker';
 import TrendingPalettes from '@/components/Community/TrendingPalettes';
+import ColorList from '@/components/Colors/ColorList';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -40,6 +41,10 @@ function App() {
         {
           path: 'trending',
           element: <TrendingPalettes />
+        },
+        {
+          path: 'color-list',
+          element: <ColorList />
         },
         {
           path: '*',

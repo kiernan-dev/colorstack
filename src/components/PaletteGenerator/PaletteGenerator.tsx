@@ -56,7 +56,7 @@ const PaletteGenerator = () => {
   }, []);
 
   return (
-    <div className="relative flex flex-col h-screen">
+    <div className="relative flex flex-col" style={{ height: 'calc(100vh - 80px)' }}>
       {/* Color Swatches */}
       <div className="flex flex-grow">
         {colors.map((color, index) => (
