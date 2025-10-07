@@ -2,7 +2,11 @@
 // This worker handles contrast calculations and color variations to prevent UI blocking
 
 // Import chroma-js for color operations
-importScripts('https://unpkg.com/chroma-js@3.1.2/index.min.js');
+try {
+  importScripts('https://unpkg.com/chroma-js@3.1.2/index.min.js');
+} catch (error) {
+  console.error('Failed to load chroma-js, falling back to basic color functions');
+}
 
 // Color utility functions for the worker
 const workerColorUtils = {

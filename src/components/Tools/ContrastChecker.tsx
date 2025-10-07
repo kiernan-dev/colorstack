@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { colorUtils } from '@/utils/colorUtils';
-import { useColorWorker } from '@/hooks/useColorWorker';
 import { Star, AlertCircle, HelpCircle, Lightbulb } from 'lucide-react';
 
 const ContrastChecker = () => {
@@ -14,32 +13,17 @@ const ContrastChecker = () => {
     largeText: { level: 'Fail', stars: 1, label: 'Very poor' }
   });
   const [suggestedFixes, setSuggestedFixes] = useState<any[]>([]);
-  const [isCalculating, setIsCalculating] = useState(false);
-  
-  const { calculateContrast, generateFixes } = useColorWorker();
-
-  // Calculate contrast ratio using Web Worker
+  // Calculate contrast ratio synchronously
   useEffect(() => {
-    setIsCalculating(true);
-    calculateContrast(textColor, backgroundColor)
-      .then((result) => {
-        setContrastData(result);
-        setIsCalculating(false);
-      })
-      .catch((error) => {
-        console.error('Contrast calculation error:', error);
-        // Fallback to synchronous calculation
-        const ratio = colorUtils.calculateContrast(textColor, backgroundColor);
-        setContrastData({
-          ratio: ratio.toFixed(2),
-          normalText: colorUtils.getWCAGRating(ratio, false),
-          largeText: colorUtils.getWCAGRating(ratio, true)
-        });
-        setIsCalculating(false);
-      });
-  }, [textColor, backgroundColor, calculateContrast]);
+    const ratio = colorUtils.calculateContrast(textColor, backgroundColor);
+    setContrastData({
+      ratio: ratio.toFixed(2),
+      normalText: colorUtils.getWCAGRating(ratio, false),
+      largeText: colorUtils.getWCAGRating(ratio, true)
+    });
+  }, [textColor, backgroundColor]);
 
-  // Generate accessible variations using Web Worker
+  // Generate accessible variations synchronously
   useEffect(() => {
     if (!showFixes) {
       setSuggestedFixes([]);
@@ -48,47 +32,38 @@ const ContrastChecker = () => {
     
     const targetColor = fixMode === 'text' ? textColor : backgroundColor;
     const contrastColor = fixMode === 'text' ? backgroundColor : textColor;
+    const variations = [];
     
-    generateFixes(targetColor, contrastColor, fixMode)
-      .then((fixes) => {
-        setSuggestedFixes(fixes);
-      })
-      .catch((error) => {
-        console.error('Fixes generation error:', error);
-        // Fallback to synchronous generation
-        const variations = [];
-        
-        for (let i = 0.1; i <= 0.6; i += 0.1) {
-          const lighter = colorUtils.generateVariations(targetColor, 'tint', i);
-          const lighterContrast = colorUtils.calculateContrast(
-            fixMode === 'text' ? lighter : contrastColor,
-            fixMode === 'text' ? contrastColor : lighter
-          );
-          
-          const darker = colorUtils.generateVariations(targetColor, 'shade', i);
-          const darkerContrast = colorUtils.calculateContrast(
-            fixMode === 'text' ? darker : contrastColor,
-            fixMode === 'text' ? contrastColor : darker
-          );
-          
-          variations.push({
-            color: lighter,
-            contrast: lighterContrast,
-            label: `Lighter +${Math.round(i * 100)}%`,
-            rating: colorUtils.getWCAGRating(lighterContrast, false)
-          });
-          
-          variations.push({
-            color: darker,
-            contrast: darkerContrast,
-            label: `Darker +${Math.round(i * 100)}%`,
-            rating: colorUtils.getWCAGRating(darkerContrast, false)
-          });
-        }
-        
-        setSuggestedFixes(variations.sort((a, b) => b.contrast - a.contrast));
+    for (let i = 0.1; i <= 0.6; i += 0.1) {
+      const lighter = colorUtils.generateVariations(targetColor, 'tint', i);
+      const lighterContrast = colorUtils.calculateContrast(
+        fixMode === 'text' ? lighter : contrastColor,
+        fixMode === 'text' ? contrastColor : lighter
+      );
+      
+      const darker = colorUtils.generateVariations(targetColor, 'shade', i);
+      const darkerContrast = colorUtils.calculateContrast(
+        fixMode === 'text' ? darker : contrastColor,
+        fixMode === 'text' ? contrastColor : darker
+      );
+      
+      variations.push({
+        color: lighter,
+        contrast: lighterContrast,
+        label: `Lighter +${Math.round(i * 100)}%`,
+        rating: colorUtils.getWCAGRating(lighterContrast, false)
       });
-  }, [showFixes, fixMode, textColor, backgroundColor, generateFixes]);
+      
+      variations.push({
+        color: darker,
+        contrast: darkerContrast,
+        label: `Darker +${Math.round(i * 100)}%`,
+        rating: colorUtils.getWCAGRating(darkerContrast, false)
+      });
+    }
+    
+    setSuggestedFixes(variations.sort((a, b) => b.contrast - a.contrast));
+  }, [showFixes, fixMode, textColor, backgroundColor]);
 
   // Memoized event handlers
   const handleTextColorChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -199,7 +174,7 @@ const ContrastChecker = () => {
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-lg font-semibold">Contrast</h3>
               <span className="text-2xl font-bold">
-                {isCalculating ? '...' : contrastData.ratio}
+                {contrastData.ratio}
               </span>
             </div>
 
