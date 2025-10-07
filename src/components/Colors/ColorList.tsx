@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import { colorData } from '@/utils/colorData';
 import { Search } from 'lucide-react';
 
@@ -27,6 +27,15 @@ const ColorList = () => {
     { name: 'Gray', color: '#6B7280' },
     { name: 'Black', color: '#000000' }
   ];
+
+  // Memoized event handlers to prevent unnecessary re-renders
+  const handleCategorySelect = useCallback((categoryName: string) => {
+    setSelectedCategory(categoryName);
+  }, []);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
 
   const filteredColors = useMemo(() => {
     let filtered = colorData;
@@ -63,7 +72,7 @@ const ColorList = () => {
               type="text"
               placeholder="Search colors (min 2 characters)..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
             />
           </div>
@@ -74,7 +83,7 @@ const ColorList = () => {
           {categories.map((category) => (
             <button
               key={category.name}
-              onClick={() => setSelectedCategory(category.name)}
+              onClick={() => handleCategorySelect(category.name)}
               className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 selectedCategory === category.name
                   ? 'bg-blue-500 text-white'
@@ -140,4 +149,4 @@ const ColorList = () => {
   );
 };
 
-export default ColorList;
+export default memo(ColorList);

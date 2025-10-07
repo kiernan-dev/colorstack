@@ -24,25 +24,36 @@ const ColorSwatch = ({
   onActivate,
   onRemove
 }: ColorSwatchProps) => {
-  const [colorFormat, setColorFormat] = useState<ColorFormat>('hex');
-  const [isCopied, setIsCopied] = useState(false);
-  const [showColorPicker, setShowColorPicker] = useState(false);
+  // Combine related state to reduce re-renders
+  const [swatchState, setSwatchState] = useState({
+    colorFormat: 'hex' as ColorFormat,
+    isCopied: false,
+    showColorPicker: false
+  });
+
+  const updateSwatchState = useCallback((updates: Partial<typeof swatchState>) => {
+    setSwatchState(prev => ({ ...prev, ...updates }));
+  }, []);
+
+  const handleCloseColorPicker = useCallback(() => {
+    updateSwatchState({ showColorPicker: false });
+  }, [updateSwatchState]);
 
   const textColor = colorUtils.getTextColor(color);
 
   const handleCopy = useCallback(() => {
-    const formattedColor = colorUtils.formatColorForDisplay(color, colorFormat);
+    const formattedColor = colorUtils.formatColorForDisplay(color, swatchState.colorFormat);
     navigator.clipboard.writeText(formattedColor);
-    setIsCopied(true);
+    updateSwatchState({ isCopied: true });
     
     setTimeout(() => {
-      setIsCopied(false);
+      updateSwatchState({ isCopied: false });
     }, 2000);
-  }, [color, colorFormat]);
+  }, [color, swatchState.colorFormat, updateSwatchState]);
 
   const handleFormatChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setColorFormat(e.target.value as ColorFormat);
-  }, []);
+    updateSwatchState({ colorFormat: e.target.value as ColorFormat });
+  }, [updateSwatchState]);
 
   const handleColorChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -84,14 +95,14 @@ const ColorSwatch = ({
             handleCopy();
           }}
         >
-          {isCopied ? <Check size={20} /> : <Copy size={20} />}
+          {swatchState.isCopied ? <Check size={20} /> : <Copy size={20} />}
         </button>
 
         <button
           className="p-2 mb-2 text-current rounded-full hover:bg-white/20"
           onClick={(e) => {
             e.stopPropagation();
-            setShowColorPicker(!showColorPicker);
+            updateSwatchState({ showColorPicker: !swatchState.showColorPicker });
           }}
         >
           <Info size={20} />
@@ -117,16 +128,16 @@ const ColorSwatch = ({
       </div>
 
       {/* Color Picker Modal */}
-      {showColorPicker && (
+      {swatchState.showColorPicker && (
         <div
           className="absolute z-10 p-4 -translate-x-1/2 bg-white rounded-lg shadow-lg left-1/2 top-1/3 w-72"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-800">Edit Color</h3>
-            <button 
-              onClick={() => setShowColorPicker(false)}
-              className="text-gray-500 hover:text-gray-700"
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">Color Editor</h3>
+            <button
+              onClick={handleCloseColorPicker}
+              className="p-1 text-gray-400 hover:text-gray-600"
             >
               <X size={20} />
             </button>
@@ -137,7 +148,7 @@ const ColorSwatch = ({
               Color Format
             </label>
             <select
-              value={colorFormat}
+              value={swatchState.colorFormat}
               onChange={handleFormatChange}
               className="w-full px-3 py-2 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -156,7 +167,7 @@ const ColorSwatch = ({
             <div className="flex">
               <input
                 type="text"
-                value={colorUtils.formatColorForDisplay(color, colorFormat)}
+                value={colorUtils.formatColorForDisplay(color, swatchState.colorFormat)}
                 className="flex-1 px-3 py-2 text-gray-700 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 readOnly
               />
@@ -164,7 +175,7 @@ const ColorSwatch = ({
                 onClick={handleCopy}
                 className="px-3 py-2 text-white bg-blue-500 rounded-r-md hover:bg-blue-600"
               >
-                {isCopied ? <Check size={16} /> : <Copy size={16} />}
+                {swatchState.isCopied ? <Check size={16} /> : <Copy size={16} />}
               </button>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { colorUtils } from '@/utils/colorUtils';
 import { Star, AlertCircle, HelpCircle, Lightbulb } from 'lucide-react';
 
@@ -63,14 +63,31 @@ const ContrastChecker = () => {
     return variations.sort((a, b) => b.contrast - a.contrast);
   }, [showFixes, fixMode, textColor, backgroundColor]);
 
-  const handleFixClick = (color: string) => {
+  // Memoized event handlers
+  const handleTextColorChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setTextColor(e.target.value);
+  }, []);
+
+  const handleBackgroundColorChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setBackgroundColor(e.target.value);
+  }, []);
+
+  const handleFixClick = useCallback((color: string) => {
     if (fixMode === 'text') {
       setTextColor(color);
     } else {
       setBackgroundColor(color);
     }
     setShowFixes(false);
-  };
+  }, [fixMode]);
+
+  const handleFixModeText = useCallback(() => {
+    setFixMode('text');
+  }, []);
+
+  const handleFixModeBackground = useCallback(() => {
+    setFixMode('background');
+  }, []);
 
   // Generate stars for ratings
   const renderStars = (count: number) => {
@@ -100,7 +117,7 @@ const ContrastChecker = () => {
               <input
                 type="color"
                 value={textColor}
-                onChange={(e) => setTextColor(e.target.value)}
+                onChange={handleTextColorChange}
                 className="w-12 h-10 border border-gray-300 rounded-l-md cursor-pointer"
               />
               <input
@@ -128,7 +145,7 @@ const ContrastChecker = () => {
               <input
                 type="color"
                 value={backgroundColor}
-                onChange={(e) => setBackgroundColor(e.target.value)}
+                onChange={handleBackgroundColorChange}
                 className="w-12 h-10 border border-gray-300 rounded-l-md cursor-pointer"
               />
               <input
@@ -234,7 +251,7 @@ const ContrastChecker = () => {
                 className={`px-3 py-1 text-sm font-medium rounded-md ${
                   fixMode === 'text' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
                 }`}
-                onClick={() => setFixMode('text')}
+                onClick={handleFixModeText}
               >
                 Fix Text
               </button>
@@ -242,7 +259,7 @@ const ContrastChecker = () => {
                 className={`px-3 py-1 text-sm font-medium rounded-md ${
                   fixMode === 'background' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
                 }`}
-                onClick={() => setFixMode('background')}
+                onClick={handleFixModeBackground}
               >
                 Fix Background
               </button>
@@ -302,4 +319,4 @@ const ContrastChecker = () => {
   );
 };
 
-export default ContrastChecker;
+export default memo(ContrastChecker);
