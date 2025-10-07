@@ -10,9 +10,28 @@ export interface PaletteState {
 
 export function useColorPalette(initialColors?: string[]) {
   const [state, setState] = useState<PaletteState>(() => {
-    const colors = initialColors?.length 
-      ? initialColors.slice(0, 5) 
-      : colorUtils.generateRandomPalette(5);
+    // First, try to load from URL hash
+    const hash = window.location.hash;
+    let colors: string[] = [];
+    
+    if (hash && hash.startsWith('#')) {
+      try {
+        // Format: #AABBCC-DDEEFF-112233-445566-778899
+        const hashColors = hash.substring(1).split('-');
+        if (hashColors.length === 5 && hashColors.every(c => /^[0-9A-F]{6}$/i.test(c))) {
+          colors = hashColors.map(c => `#${c.toUpperCase()}`);
+        }
+      } catch (error) {
+        console.error('Failed to parse URL hash:', error);
+      }
+    }
+    
+    // If no valid hash colors, use initialColors or generate random
+    if (colors.length === 0) {
+      colors = initialColors?.length 
+        ? initialColors.slice(0, 5) 
+        : colorUtils.generateRandomPalette(5);
+    }
     
     // Ensure we always have exactly 5 colors
     const paddedColors = [...colors];
@@ -28,25 +47,6 @@ export function useColorPalette(initialColors?: string[]) {
     };
   });
 
-  // Load from URL hash if available
-  useEffect(() => {
-    const hash = window.location.hash;
-    if (hash && hash.startsWith('#')) {
-      try {
-        // Format: #/AABBCC-DDEEFF-112233-445566-778899
-        const colors = hash.substring(2).split('-');
-        if (colors.length === 5 && colors.every(c => /^[0-9A-F]{6}$/i.test(c))) {
-          setState(prev => ({
-            ...prev,
-            colors: colors.map(c => `#${c.toUpperCase()}`),
-            history: []
-          }));
-        }
-      } catch (error) {
-        console.error('Failed to parse URL hash:', error);
-      }
-    }
-  }, []);
 
   // Update URL hash when colors change
   useEffect(() => {
@@ -56,7 +56,7 @@ export function useColorPalette(initialColors?: string[]) {
     window.history.replaceState(
       null, 
       '', 
-      `#/${colorString}`
+      `#${colorString}`
     );
   }, [state.colors]);
 
