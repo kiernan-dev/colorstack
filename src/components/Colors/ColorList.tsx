@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { colorData } from '@/utils/colorData';
+import { Search } from 'lucide-react';
 
 interface ColorItem {
   name: string;
@@ -9,6 +10,7 @@ interface ColorItem {
 
 const ColorList = () => {
   const [selectedCategory, setSelectedCategory] = useState('All Shades');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const categories = [
     'All Shades',
@@ -27,11 +29,22 @@ const ColorList = () => {
   ];
 
   const filteredColors = useMemo(() => {
-    if (selectedCategory === 'All Shades') {
-      return colorData;
+    let filtered = colorData;
+    
+    // Filter by category
+    if (selectedCategory !== 'All Shades') {
+      filtered = filtered.filter(color => color.category === selectedCategory);
     }
-    return colorData.filter(color => color.category === selectedCategory);
-  }, [selectedCategory]);
+    
+    // Filter by search query (only if 2+ characters)
+    if (searchQuery.length >= 2) {
+      filtered = filtered.filter(color => 
+        color.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    return filtered;
+  }, [selectedCategory, searchQuery]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -40,6 +53,20 @@ const ColorList = () => {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Colors</h1>
           <p className="text-gray-600">Browse our library of more than 500 color names.</p>
+        </div>
+
+        {/* Search Bar */}
+        <div className="max-w-md mx-auto mb-8">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <input
+              type="text"
+              placeholder="Search colors (min 2 characters)..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            />
+          </div>
         </div>
 
         {/* Filter Buttons */}
@@ -92,7 +119,12 @@ const ColorList = () => {
         {/* Show message if no colors found */}
         {filteredColors.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500">No colors found in this category.</p>
+            <p className="text-gray-500">
+              {searchQuery.length >= 2 
+                ? `No colors found matching "${searchQuery}"`
+                : "No colors found in this category."
+              }
+            </p>
           </div>
         )}
       </div>
