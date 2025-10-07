@@ -34,6 +34,22 @@ const GradientMaker = () => {
     }
   };
 
+  // Generate gradient value for inline styles
+  const generateGradientValue = () => {
+    const { type, angle, stops } = gradientConfig;
+    const sortedStops = [...stops].sort((a, b) => a.position - b.position);
+    
+    const stopString = sortedStops
+      .map(stop => `${stop.color} ${stop.position}%`)
+      .join(', ');
+    
+    if (type === 'linear') {
+      return `linear-gradient(${angle}deg, ${stopString})`;
+    } else {
+      return `radial-gradient(circle, ${stopString})`;
+    }
+  };
+
   // Copy CSS to clipboard
   const handleCopyCSS = () => {
     navigator.clipboard.writeText(generateCSS());
@@ -315,11 +331,7 @@ const GradientMaker = () => {
             className={`rounded-lg overflow-hidden shadow-md transform transition-transform will-change-transform ${
               isFullscreen ? 'fixed inset-0 z-50 rounded-none' : 'h-64'
             }`}
-            style={{ background: colorUtils.generateGradientCSS(
-              gradientConfig.stops.map(s => s.color),
-              gradientConfig.angle,
-              gradientConfig.type
-            ) }}
+            style={{ background: generateGradientValue() }}
           >
             <button
               onClick={toggleFullscreen}
