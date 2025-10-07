@@ -57,7 +57,9 @@ function App() {
         }
       ]
     }
-  ]);
+  ], {
+    basename: import.meta.env.PROD ? '/colorstack' : undefined
+  });
 
   if (isLoading) {
     return (

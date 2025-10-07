@@ -65,7 +65,7 @@ export function useColorPalette(initialColors?: string[]) {
       const lockedColors = prev.colors.map((color, index) => 
         prev.lockedStates[index] ? color : null
       );
-      const newColors = colorUtils.generateRandomPalette(5, lockedColors);
+      const newColors = colorUtils.generateRandomPalette(prev.colors.length, lockedColors);
       
       return {
         ...prev,
