@@ -62,7 +62,7 @@ function App() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-white">
-        <div className="text-3xl font-bold text-blue-500">Loading Coolors...</div>
+        <div className="text-3xl font-bold text-blue-500">Loading ColorStack...</div>
       </div>
     );
   }

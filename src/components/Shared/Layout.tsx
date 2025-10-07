@@ -30,7 +30,7 @@ const Layout = () => {
       <header className="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 md:px-6">
         {/* Logo */}
         <Link to="/" className="text-2xl font-bold text-blue-500">
-          COOLORS
+          ColorStack
         </Link>
 
         {/* Desktop Navigation */}
@@ -180,7 +180,7 @@ const Layout = () => {
           
           <div className="container px-4 pt-6 mx-auto mt-6 text-center border-t border-gray-200 md:px-6">
             <p className="text-gray-600">
-              © 2025 Coolors Replica. All rights reserved.
+              © 2025 ColorStack Replica. All rights reserved.
             </p>
           </div>
         </footer>
