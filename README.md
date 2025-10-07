@@ -1,6 +1,6 @@
 # ColorStack
 
-A modern color palette generator inspired by Coolors, built with React, TypeScript, and Vite.
+A powerful and intuitive color palette generator for designers and developers. Create, explore, and export beautiful color schemes with ease.
 
 ## Features
 

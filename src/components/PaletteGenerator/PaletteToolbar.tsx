@@ -1,4 +1,5 @@
 import { Copy, Download, Save, Undo, RefreshCw, Share2, Image, Layout, Sliders } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface PaletteToolbarProps {
   onExport: () => void;
@@ -15,14 +16,14 @@ const PaletteToolbar = ({
 }: PaletteToolbarProps) => {
   const handleSave = () => {
     // In a real app, this would save to a user account
-    // For this demo, we'll show a modal that simulates login
-    alert('To save your palette, please sign up or log in');
+    // For this demo, we'll show a toast that simulates login
+    toast.info('To save your palette, please sign up or log in');
   };
 
   const handleShare = () => {
     // Share functionality - copy URL to clipboard
     navigator.clipboard.writeText(window.location.href);
-    alert('Palette URL copied to clipboard');
+    toast.success('Palette URL copied to clipboard');
   };
 
   return (

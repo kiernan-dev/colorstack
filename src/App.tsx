@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import { Toaster } from '@/components/ui/sonner';
 
 // Layout and pages
 import Layout from '@/components/Shared/Layout';
@@ -69,7 +70,12 @@ function App() {
     );
   }
 
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <Toaster />
+    </>
+  );
 }
 
 export default App;

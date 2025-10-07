@@ -180,7 +180,7 @@ const Layout = () => {
           
           <div className="container px-4 pt-6 mx-auto mt-6 text-center border-t border-gray-200 md:px-6">
             <p className="text-gray-600">
-              © 2025 ColorStack Replica. All rights reserved.
+              © 2025 ColorStack. All rights reserved.
             </p>
           </div>
         </footer>

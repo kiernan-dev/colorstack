@@ -13,19 +13,19 @@ const ColorList = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const categories = [
-    'All Shades',
-    'Red',
-    'Orange', 
-    'Brown',
-    'Yellow',
-    'Green',
-    'Turquoise',
-    'Blue',
-    'Violet',
-    'Pink',
-    'White',
-    'Gray',
-    'Black'
+    { name: 'All Shades', color: null },
+    { name: 'Red', color: '#DC2626' },
+    { name: 'Orange', color: '#EA580C' },
+    { name: 'Brown', color: '#92400E' },
+    { name: 'Yellow', color: '#CA8A04' },
+    { name: 'Green', color: '#16A34A' },
+    { name: 'Turquoise', color: '#0891B2' },
+    { name: 'Blue', color: '#2563EB' },
+    { name: 'Violet', color: '#7C3AED' },
+    { name: 'Pink', color: '#DB2777' },
+    { name: 'White', color: '#FFFFFF' },
+    { name: 'Gray', color: '#6B7280' },
+    { name: 'Black', color: '#000000' }
   ];
 
   const filteredColors = useMemo(() => {
@@ -73,15 +73,23 @@ const ColorList = () => {
         <div className="flex flex-wrap justify-center gap-2 mb-8">
           {categories.map((category) => (
             <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedCategory === category
+              key={category.name}
+              onClick={() => setSelectedCategory(category.name)}
+              className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedCategory === category.name
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              {category}
+              {category.color && (
+                <div 
+                  className={`w-3 h-3 rounded-full mr-2 ${
+                    category.name === 'White' ? 'border border-gray-300' : ''
+                  }`}
+                  style={{ backgroundColor: category.color }}
+                />
+              )}
+              {category.name}
             </button>
           ))}
         </div>
