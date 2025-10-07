@@ -69,16 +69,6 @@ const Layout = () => {
           >
             Trending
           </Link>
-
-          {/* Go Pro Button */}
-          <button className="px-4 py-2 text-sm font-medium text-gray-800 transition-colors border border-gray-300 rounded-md hover:bg-gray-100">
-            Go Pro
-          </button>
-
-          {/* Sign In Button */}
-          <button className="px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-500 rounded-md hover:bg-blue-600">
-            Sign up
-          </button>
         </nav>
 
         {/* Mobile Menu Button */}

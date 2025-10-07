@@ -75,23 +75,6 @@ const PaletteToolbar = ({
           Generate
         </button>
       </div>
-      
-      <div className="flex items-center space-x-2">
-        <button className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-colors rounded-md hover:bg-gray-100">
-          <Image className="w-4 h-4 mr-2" />
-          Image
-        </button>
-        
-        <button className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-colors rounded-md hover:bg-gray-100">
-          <Layout className="w-4 h-4 mr-2" />
-          View
-        </button>
-        
-        <button className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-colors rounded-md hover:bg-gray-100">
-          <Sliders className="w-4 h-4 mr-2" />
-          Adjust
-        </button>
-      </div>
     </div>
   );
 };
