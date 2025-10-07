@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, memo } from 'react';
 import { colorUtils } from '@/utils/colorUtils';
 import { ColorFormat } from '@/types';
 import { Lock, Unlock, Copy, Info, Trash, X, Check } from 'lucide-react';
@@ -186,4 +186,4 @@ const ColorSwatch = ({
   );
 };
 
-export default ColorSwatch;
+export default memo(ColorSwatch);

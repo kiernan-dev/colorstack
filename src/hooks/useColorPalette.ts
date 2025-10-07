@@ -48,16 +48,20 @@ export function useColorPalette(initialColors?: string[]) {
   });
 
 
-  // Update URL hash when colors change
+  // Update URL hash when colors change (debounced to prevent memory leaks)
   useEffect(() => {
-    const colorString = state.colors
-      .map(c => c.replace('#', ''))
-      .join('-');
-    window.history.replaceState(
-      null, 
-      '', 
-      `#${colorString}`
-    );
+    const debounceTimer = setTimeout(() => {
+      const colorString = state.colors
+        .map(c => c.replace('#', ''))
+        .join('-');
+      window.history.replaceState(
+        null, 
+        '', 
+        `#${colorString}`
+      );
+    }, 300);
+    
+    return () => clearTimeout(debounceTimer);
   }, [state.colors]);
 
   const generateNewPalette = useCallback(() => {

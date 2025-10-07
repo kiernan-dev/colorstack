@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useColorPalette } from '@/hooks/useColorPalette';
 import ColorSwatch from './ColorSwatch';
 import PaletteToolbar from './PaletteToolbar';
@@ -23,28 +23,54 @@ const PaletteGenerator = () => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [showSpacebarHint, setShowSpacebarHint] = useState(true);
 
-  // Handle keyboard shortcuts
+  // Use refs to avoid re-registering event listener
+  const stateRef = useRef({
+    activeColorIndex,
+    canUndo,
+    colors,
+    generateNewPalette,
+    toggleLock,
+    undo,
+    setShowSpacebarHint
+  });
+
+  // Update ref with current values
+  useEffect(() => {
+    stateRef.current = {
+      activeColorIndex,
+      canUndo,
+      colors,
+      generateNewPalette,
+      toggleLock,
+      undo,
+      setShowSpacebarHint
+    };
+  });
+
+  // Handle keyboard shortcuts - memoized to prevent re-registration
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    const state = stateRef.current;
+    
     if (e.code === 'Space' && !e.repeat && !e.ctrlKey && !e.altKey && !e.metaKey) {
       e.preventDefault();
-      generateNewPalette();
-      setShowSpacebarHint(false);
-    } else if (e.code === 'KeyL' && activeColorIndex !== null) {
-      toggleLock(activeColorIndex);
-    } else if (e.code === 'KeyC' && activeColorIndex !== null) {
+      state.generateNewPalette();
+      state.setShowSpacebarHint(false);
+    } else if (e.code === 'KeyL' && state.activeColorIndex !== null) {
+      state.toggleLock(state.activeColorIndex);
+    } else if (e.code === 'KeyC' && state.activeColorIndex !== null) {
       // Copy color to clipboard
-      navigator.clipboard.writeText(colors[activeColorIndex]);
-    } else if (e.code === 'KeyZ' && e.ctrlKey && canUndo) {
-      undo();
+      navigator.clipboard.writeText(state.colors[state.activeColorIndex]);
+    } else if (e.code === 'KeyZ' && e.ctrlKey && state.canUndo) {
+      state.undo();
     }
-  }, [activeColorIndex, canUndo, colors, generateNewPalette, toggleLock, undo, setShowSpacebarHint]);
+  }, []); // Empty dependency array - function never changes
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleKeyDown]);
+  }, [handleKeyDown]); // handleKeyDown never changes now
 
   // Hide spacebar hint after 10 seconds
   useEffect(() => {
