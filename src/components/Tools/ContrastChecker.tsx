@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { colorUtils } from '@/utils/colorUtils';
+import { useColorWorker } from '@/hooks/useColorWorker';
 import { Star, AlertCircle, HelpCircle, Lightbulb } from 'lucide-react';
 
 const ContrastChecker = () => {
@@ -7,61 +8,87 @@ const ContrastChecker = () => {
   const [backgroundColor, setBackgroundColor] = useState('#FFFFFF');
   const [showFixes, setShowFixes] = useState(false);
   const [fixMode, setFixMode] = useState<'text' | 'background'>('text');
+  const [contrastData, setContrastData] = useState({
+    ratio: '1.00',
+    normalText: { level: 'Fail', stars: 1, label: 'Very poor' },
+    largeText: { level: 'Fail', stars: 1, label: 'Very poor' }
+  });
+  const [suggestedFixes, setSuggestedFixes] = useState<any[]>([]);
+  const [isCalculating, setIsCalculating] = useState(false);
+  
+  const { calculateContrast, generateFixes } = useColorWorker();
 
-  // Calculate contrast ratio and WCAG compliance
-  const contrastData = useMemo(() => {
-    const ratio = colorUtils.calculateContrast(textColor, backgroundColor);
-    
-    return {
-      ratio: ratio.toFixed(2),
-      normalText: colorUtils.getWCAGRating(ratio, false),
-      largeText: colorUtils.getWCAGRating(ratio, true)
-    };
-  }, [textColor, backgroundColor]);
+  // Calculate contrast ratio using Web Worker
+  useEffect(() => {
+    setIsCalculating(true);
+    calculateContrast(textColor, backgroundColor)
+      .then((result) => {
+        setContrastData(result);
+        setIsCalculating(false);
+      })
+      .catch((error) => {
+        console.error('Contrast calculation error:', error);
+        // Fallback to synchronous calculation
+        const ratio = colorUtils.calculateContrast(textColor, backgroundColor);
+        setContrastData({
+          ratio: ratio.toFixed(2),
+          normalText: colorUtils.getWCAGRating(ratio, false),
+          largeText: colorUtils.getWCAGRating(ratio, true)
+        });
+        setIsCalculating(false);
+      });
+  }, [textColor, backgroundColor, calculateContrast]);
 
-  // Generate accessible variations
-  const suggestedFixes = useMemo(() => {
-    if (!showFixes) return [];
+  // Generate accessible variations using Web Worker
+  useEffect(() => {
+    if (!showFixes) {
+      setSuggestedFixes([]);
+      return;
+    }
     
     const targetColor = fixMode === 'text' ? textColor : backgroundColor;
     const contrastColor = fixMode === 'text' ? backgroundColor : textColor;
     
-    const variations = [];
-    
-    // Generate 6 variations
-    for (let i = 0.1; i <= 0.6; i += 0.1) {
-      // Lighter
-      const lighter = colorUtils.generateVariations(targetColor, 'tint', i);
-      const lighterContrast = colorUtils.calculateContrast(
-        fixMode === 'text' ? lighter : contrastColor,
-        fixMode === 'text' ? contrastColor : lighter
-      );
-      
-      // Darker
-      const darker = colorUtils.generateVariations(targetColor, 'shade', i);
-      const darkerContrast = colorUtils.calculateContrast(
-        fixMode === 'text' ? darker : contrastColor,
-        fixMode === 'text' ? contrastColor : darker
-      );
-      
-      variations.push({
-        color: lighter,
-        contrast: lighterContrast,
-        label: `Lighter +${Math.round(i * 100)}%`,
-        rating: colorUtils.getWCAGRating(lighterContrast, false)
+    generateFixes(targetColor, contrastColor, fixMode)
+      .then((fixes) => {
+        setSuggestedFixes(fixes);
+      })
+      .catch((error) => {
+        console.error('Fixes generation error:', error);
+        // Fallback to synchronous generation
+        const variations = [];
+        
+        for (let i = 0.1; i <= 0.6; i += 0.1) {
+          const lighter = colorUtils.generateVariations(targetColor, 'tint', i);
+          const lighterContrast = colorUtils.calculateContrast(
+            fixMode === 'text' ? lighter : contrastColor,
+            fixMode === 'text' ? contrastColor : lighter
+          );
+          
+          const darker = colorUtils.generateVariations(targetColor, 'shade', i);
+          const darkerContrast = colorUtils.calculateContrast(
+            fixMode === 'text' ? darker : contrastColor,
+            fixMode === 'text' ? contrastColor : darker
+          );
+          
+          variations.push({
+            color: lighter,
+            contrast: lighterContrast,
+            label: `Lighter +${Math.round(i * 100)}%`,
+            rating: colorUtils.getWCAGRating(lighterContrast, false)
+          });
+          
+          variations.push({
+            color: darker,
+            contrast: darkerContrast,
+            label: `Darker +${Math.round(i * 100)}%`,
+            rating: colorUtils.getWCAGRating(darkerContrast, false)
+          });
+        }
+        
+        setSuggestedFixes(variations.sort((a, b) => b.contrast - a.contrast));
       });
-      
-      variations.push({
-        color: darker,
-        contrast: darkerContrast,
-        label: `Darker +${Math.round(i * 100)}%`,
-        rating: colorUtils.getWCAGRating(darkerContrast, false)
-      });
-    }
-    
-    // Sort by contrast ratio (highest first)
-    return variations.sort((a, b) => b.contrast - a.contrast);
-  }, [showFixes, fixMode, textColor, backgroundColor]);
+  }, [showFixes, fixMode, textColor, backgroundColor, generateFixes]);
 
   // Memoized event handlers
   const handleTextColorChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -171,7 +198,9 @@ const ContrastChecker = () => {
           <div className={`p-4 rounded-md ${Number(contrastData.ratio) >= 4.5 ? 'bg-green-100' : 'bg-yellow-100'}`}>
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-lg font-semibold">Contrast</h3>
-              <span className="text-2xl font-bold">{contrastData.ratio}</span>
+              <span className="text-2xl font-bold">
+                {isCalculating ? '...' : contrastData.ratio}
+              </span>
             </div>
 
             <div className="mb-2">
@@ -270,7 +299,7 @@ const ContrastChecker = () => {
             {suggestedFixes.map((fix, index) => (
               <button
                 key={`fix-${index}`}
-                className="flex flex-col items-center p-3 transition-transform border rounded-md hover:shadow-md hover:scale-105"
+                className="flex flex-col items-center p-3 border rounded-md transform transition-transform hover:scale-105 will-change-transform"
                 onClick={() => handleFixClick(fix.color)}
               >
                 <div

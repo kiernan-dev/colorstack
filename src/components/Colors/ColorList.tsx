@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, memo } from 'react';
+import { useState, useMemo, useCallback, memo, useEffect } from 'react';
 import { colorData } from '@/utils/colorData';
 import { Search } from 'lucide-react';
 
@@ -55,6 +55,32 @@ const ColorList = () => {
     return filtered;
   }, [selectedCategory, searchQuery]);
 
+  // Color card component
+  const ColorCard = memo(({ color }: { color: ColorItem }) => (
+    <div className="group relative bg-white rounded-lg shadow-sm m-2 transform will-change-transform transition-transform hover:scale-102">
+      {/* Color Swatch */}
+      <div
+        className="w-full h-32 rounded-t-lg"
+        style={{ backgroundColor: color.hex }}
+      />
+      
+      {/* Color Info */}
+      <div className="p-3">
+        <h3 className="text-lg font-medium text-gray-900 mb-1">
+          {color.name}
+        </h3>
+      </div>
+
+      {/* Hex Value on Hover */}
+      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 rounded-lg transform transition-all duration-200 will-change-transform group-hover:bg-opacity-40">
+        <span className="text-white font-mono text-lg transform transition-opacity duration-200 will-change-transform opacity-0 group-hover:opacity-100">
+          {color.hex.toUpperCase()}
+        </span>
+      </div>
+    </div>
+  ));
+
+
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
@@ -104,34 +130,13 @@ const ColorList = () => {
         </div>
 
         {/* Color Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredColors.map((color, index) => (
-            <div
-              key={`${color.name}-${index}`}
-              className="group relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
-            >
-              {/* Color Swatch */}
-              <div
-                className="w-full h-32 rounded-t-lg"
-                style={{ backgroundColor: color.hex }}
-              />
-              
-              {/* Color Info */}
-              <div className="p-3">
-                <h3 className="text-lg font-medium text-gray-900 mb-1">
-                  {color.name}
-                </h3>
-              </div>
-
-              {/* Hex Value on Hover */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-lg">
-                <span className="text-white font-mono text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  {color.hex.toUpperCase()}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+        {filteredColors.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredColors.map((color, index) => (
+              <ColorCard key={`${color.hex}-${color.name}-${index}`} color={color} />
+            ))}
+          </div>
+        )}
 
         {/* Show message if no colors found */}
         {filteredColors.length === 0 && (

@@ -10,6 +10,7 @@ import GradientMaker from '@/components/Tools/GradientMaker';
 import TrendingPalettes from '@/components/Community/TrendingPalettes';
 import ColorList from '@/components/Colors/ColorList';
 import GradientList from '@/components/Gradients/GradientList';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -30,27 +31,51 @@ function App() {
       children: [
         {
           index: true,
-          element: <PaletteGenerator />
+          element: (
+            <ErrorBoundary>
+              <PaletteGenerator />
+            </ErrorBoundary>
+          )
         },
         {
           path: 'tools/contrast-checker',
-          element: <ContrastChecker />
+          element: (
+            <ErrorBoundary>
+              <ContrastChecker />
+            </ErrorBoundary>
+          )
         },
         {
           path: 'tools/gradient-maker',
-          element: <GradientMaker />
+          element: (
+            <ErrorBoundary>
+              <GradientMaker />
+            </ErrorBoundary>
+          )
         },
         {
           path: 'trending',
-          element: <TrendingPalettes />
+          element: (
+            <ErrorBoundary>
+              <TrendingPalettes />
+            </ErrorBoundary>
+          )
         },
         {
           path: 'color-list',
-          element: <ColorList />
+          element: (
+            <ErrorBoundary>
+              <ColorList />
+            </ErrorBoundary>
+          )
         },
         {
           path: 'gradients',
-          element: <GradientList />
+          element: (
+            <ErrorBoundary>
+              <GradientList />
+            </ErrorBoundary>
+          )
         },
         {
           path: '*',
@@ -72,7 +97,9 @@ function App() {
 
   return (
     <>
-      <RouterProvider router={router} />
+      <ErrorBoundary>
+        <RouterProvider router={router} />
+      </ErrorBoundary>
       <Toaster />
     </>
   );

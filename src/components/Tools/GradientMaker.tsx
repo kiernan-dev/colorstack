@@ -312,7 +312,7 @@ const GradientMaker = () => {
         {/* Preview */}
         <div className="relative">
           <div
-            className={`rounded-lg overflow-hidden shadow-md transition-all ${
+            className={`rounded-lg overflow-hidden shadow-md transform transition-transform will-change-transform ${
               isFullscreen ? 'fixed inset-0 z-50 rounded-none' : 'h-64'
             }`}
             style={{ background: colorUtils.generateGradientCSS(
@@ -339,7 +339,7 @@ const GradientMaker = () => {
           {exampleGradients.map((gradient, index) => (
             <button
               key={`example-${index}`}
-              className="relative overflow-hidden transition-transform rounded-lg shadow-md h-28 hover:shadow-lg hover:scale-105"
+              className="relative overflow-hidden rounded-lg shadow-md h-28 transform transition-transform will-change-transform hover:scale-105"
               style={{ background: gradient.css }}
               onClick={() => setGradientConfig(gradient.config)}
             >

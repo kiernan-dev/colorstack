@@ -67,7 +67,7 @@ const TrendingPalettes = () => {
         {visiblePalettes.map((palette) => (
           <div
             key={palette.id}
-            className="overflow-hidden transition-transform border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:scale-102 hover:cursor-pointer"
+            className="overflow-hidden border border-gray-200 rounded-lg shadow-sm hover:cursor-pointer transform transition-transform will-change-transform hover:scale-102"
             onClick={() => handlePaletteClick(palette)}
           >
             {/* Palette Preview */}
@@ -137,7 +137,7 @@ const TrendingPalettes = () => {
 // Featured Collection Component
 const FeaturedCollection = ({ title, colors }: { title: string, colors: string[] }) => {
   return (
-    <div className="overflow-hidden transition-transform border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:scale-102">
+    <div className="overflow-hidden border border-gray-200 rounded-lg shadow-sm transform transition-transform will-change-transform hover:scale-102">
       <div className="flex h-24">
         {colors.map((color, idx) => (
           <div
