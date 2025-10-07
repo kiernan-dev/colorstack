@@ -30,8 +30,12 @@ const TrendingPalettes = () => {
       .map(c => c.replace('#', ''))
       .join('-');
     
-    // Navigate to the palette generator with the selected colors
-    navigate(`/#/${colorString}`);
+    // Navigate to home page and set hash for palette loading
+    navigate('/');
+    // Set hash after navigation to ensure the hook picks it up
+    setTimeout(() => {
+      window.location.hash = colorString;
+    }, 0);
   };
 
   const formatLikes = (count: number) => {
@@ -118,15 +122,30 @@ const TrendingPalettes = () => {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
           <FeaturedCollection 
             title="Summer Vibes" 
-            colors={['#FF9671', '#FFC75F', '#F9F871', '#00C9A7', '#845EC2']} 
+            colors={['#FF9671', '#FFC75F', '#F9F871', '#00C9A7', '#845EC2']}
+            onClick={() => {
+              const colorString = ['#FF9671', '#FFC75F', '#F9F871', '#00C9A7', '#845EC2'].map(c => c.replace('#', '')).join('-');
+              navigate('/');
+              setTimeout(() => { window.location.hash = colorString; }, 0);
+            }}
           />
           <FeaturedCollection 
             title="Earthy Tones" 
-            colors={['#8D5B4C', '#B96F50', '#D99771', '#F2C094', '#F6E3C5']} 
+            colors={['#8D5B4C', '#B96F50', '#D99771', '#F2C094', '#F6E3C5']}
+            onClick={() => {
+              const colorString = ['#8D5B4C', '#B96F50', '#D99771', '#F2C094', '#F6E3C5'].map(c => c.replace('#', '')).join('-');
+              navigate('/');
+              setTimeout(() => { window.location.hash = colorString; }, 0);
+            }}
           />
           <FeaturedCollection 
             title="Ocean Blues" 
-            colors={['#0081CF', '#00AFEF', '#4CC9F0', '#97D8C4', '#B8E0D4']} 
+            colors={['#0081CF', '#00AFEF', '#4CC9F0', '#97D8C4', '#B8E0D4']}
+            onClick={() => {
+              const colorString = ['#0081CF', '#00AFEF', '#4CC9F0', '#97D8C4', '#B8E0D4'].map(c => c.replace('#', '')).join('-');
+              navigate('/');
+              setTimeout(() => { window.location.hash = colorString; }, 0);
+            }}
           />
         </div>
       </div>
@@ -135,9 +154,12 @@ const TrendingPalettes = () => {
 };
 
 // Featured Collection Component
-const FeaturedCollection = ({ title, colors }: { title: string, colors: string[] }) => {
+const FeaturedCollection = ({ title, colors, onClick }: { title: string, colors: string[], onClick?: () => void }) => {
   return (
-    <div className="overflow-hidden border border-gray-200 rounded-lg shadow-sm transform transition-transform will-change-transform hover:scale-102">
+    <div 
+      className="overflow-hidden border border-gray-200 rounded-lg shadow-sm hover:cursor-pointer transform transition-transform will-change-transform hover:scale-102"
+      onClick={onClick}
+    >
       <div className="flex h-24">
         {colors.map((color, idx) => (
           <div

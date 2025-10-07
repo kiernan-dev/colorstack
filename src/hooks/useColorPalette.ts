@@ -18,7 +18,7 @@ export function useColorPalette(initialColors?: string[]) {
       try {
         // Format: #AABBCC-DDEEFF-112233-445566-778899
         const hashColors = hash.substring(1).split('-');
-        if (hashColors.length === 5 && hashColors.every(c => /^[0-9A-F]{6}$/i.test(c))) {
+        if (hashColors.length >= 3 && hashColors.every(c => /^[0-9A-F]{6}$/i.test(c))) {
           colors = hashColors.map(c => `#${c.toUpperCase()}`);
         }
       } catch (error) {
@@ -47,6 +47,37 @@ export function useColorPalette(initialColors?: string[]) {
     };
   });
 
+  // Listen for hash changes to load palettes from URL
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#')) {
+        try {
+          const hashColors = hash.substring(1).split('-');
+          if (hashColors.length >= 3 && hashColors.every(c => /^[0-9A-F]{6}$/i.test(c))) {
+            const colors = hashColors.map(c => `#${c.toUpperCase()}`);
+            // Ensure we have exactly 5 colors
+            const paddedColors = [...colors];
+            while (paddedColors.length < 5) {
+              paddedColors.push(colorUtils.generateRandomPalette(1)[0]);
+            }
+            
+            setState(prev => ({
+              ...prev,
+              colors: paddedColors,
+              lockedStates: new Array(paddedColors.length).fill(false),
+              activeColorIndex: null
+            }));
+          }
+        } catch (error) {
+          console.error('Failed to parse URL hash:', error);
+        }
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   // Update URL hash when colors change (debounced to prevent memory leaks)
   useEffect(() => {
